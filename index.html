@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H3AD-REKON</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="matrix"></canvas>
+
+<nav class="nav">
+  <div class="hamburger" id="hamburger" onclick="toggleDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="nav-brand">H3AD-REKON</div>
+  <div class="nav-links">
+    <div class="nav-divider"></div>
+    <a class="whoami" href="#lookup">LOOKUP</a>
+    <a href="#footprint">FOOTPRINT</a>
+    <a href="#cve">CVE</a>
+    <a href="#c2">C2</a>
+    <a href="#exposed">EXPOSED</a>
+    <a href="https://h3ad-sec.github.io/" target="_blank" rel="noopener">H3AD-SEC</a>
+  </div>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  </div>
+</nav>
+
+<div class="nav-drawer" id="navDrawer">
+  <a class="whoami" href="#lookup" onclick="closeDrawer()">LOOKUP</a>
+  <a href="#footprint" onclick="closeDrawer()">FOOTPRINT</a>
+  <a href="#cve" onclick="closeDrawer()">CVE</a>
+  <a href="#c2" onclick="closeDrawer()">C2</a>
+  <a href="#exposed" onclick="closeDrawer()">EXPOSED</a>
+  <a href="https://h3ad-sec.github.io/" target="_blank" rel="noopener" onclick="closeDrawer()">H3AD-SEC</a>
+</div>
+
+<main>
+  <div class="container">
+    <div class="tag">Attack Surface · Recon · Exposure Intelligence · Threat Actor Infrastructure</div>
+
+    <div class="logo">
+      <img id="logoImg" src="https://h3ad-sec.github.io/logo-dark.png" alt="H3AD-REKON">
+    </div>
+
+    <div class="sub">shodan-powered reconnaissance platform</div>
+
+    <div class="panel">
+      <div class="line"><span class="prompt">root@h3ad-rekon:~$</span> <span class="cmd">status</span></div>
+      <div class="line desc">Operational attack surface intelligence for exposed assets, services, and threat infrastructure</div>
+      <br>
+      <div class="line"><span class="prompt">root@h3ad-rekon:~$</span> <span class="cmd">mission</span></div>
+      <div class="line desc">Use Shodan to map exposure, enrich internet-facing systems, and support recon-driven security operations</div>
+      <br>
+      <div class="line"><span class="prompt">root@h3ad-rekon:~$</span> <span class="cmd">domains</span></div>
+      <div class="line desc">Attack Surface Management · Asset Intelligence · CVE Recon · C2 Hunting · Exposure Discovery</div>
+      <br>
+      <div class="line"><span class="prompt">root@h3ad-rekon:~$</span> <span class="cmd">focus</span></div>
+      <div class="line desc">IP Enrichment · Org Footprinting · Shodan Queries · Internet Exposure · Threat Actor Infra</div>
+    </div>
+
+    <div class="module-grid">
+      <a class="module-card active-card" href="#lookup" onclick="showSection('lookup')">
+        <div class="module-card-name">IP-LOOKUP</div>
+        <div class="module-card-desc">Full host intelligence with ports, services, CVEs, SSL, VT & AbuseIPDB</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+      <a class="module-card" href="#footprint" onclick="showSection('footprint')">
+        <div class="module-card-name">FOOTPRINT</div>
+        <div class="module-card-desc">Map exposed infrastructure by org or domain</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+      <a class="module-card" href="#cve" onclick="showSection('cve')">
+        <div class="module-card-name">CVE-SEARCH</div>
+        <div class="module-card-desc">Find globally exposed hosts vulnerable to specific CVEs</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+      <a class="module-card" href="#c2" onclick="showSection('c2')">
+        <div class="module-card-name">C2-DETECT</div>
+        <div class="module-card-desc">Hunt exposed Cobalt Strike, Sliver, Metasploit and more</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+      <a class="module-card" href="#exposed" onclick="showSection('exposed')">
+        <div class="module-card-name">EXPOSED-SVC</div>
+        <div class="module-card-desc">Discover risky exposed services like RDP, SMB, Telnet, Jenkins</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+      <a class="module-card" href="https://h3ad-sec.github.io/" target="_blank" rel="noopener">
+        <div class="module-card-name">H3AD-SEC</div>
+        <div class="module-card-desc">Return to main cyber defense platform</div>
+        <span class="module-card-arrow">↗</span>
+      </a>
+    </div>
+
+    <div id="lookup" class="tool-section active-section">
+      <div class="tool-box">
+        <input id="ip-input" class="rekon-input" type="text" placeholder="Enter IP address (e.g. 8.8.8.8)">
+        <button class="rekon-btn" onclick="lookupIP()">SCAN</button>
+      </div>
+      <div id="ip-result" class="result-area" style="display:none;"></div>
+    </div>
+
+    <div id="footprint" class="tool-section">
+      <div class="tool-box">
+        <input id="org-input" class="rekon-input" type="text" placeholder="Enter organization or domain (e.g. Tesla)">
+        <button class="rekon-btn" onclick="footprintOrg()">MAP</button>
+      </div>
+      <div id="org-result" class="result-area" style="display:none;"></div>
+    </div>
+
+    <div id="cve" class="tool-section">
+      <div class="tool-box">
+        <input id="cve-input" class="rekon-input" type="text" placeholder="Enter CVE ID (e.g. CVE-2021-44228)">
+        <button class="rekon-btn" onclick="searchCVE()">SEARCH</button>
+      </div>
+      <div id="cve-result" class="result-area" style="display:none;"></div>
+    </div>
+
+    <div id="c2" class="tool-section">
+      <div class="tool-box">
+        <select id="c2-select" class="rekon-input rekon-select">
+          <option value="cobaltstrike">Cobalt Strike</option>
+          <option value="metasploit">Metasploit</option>
+          <option value="sliver">Sliver C2</option>
+          <option value="havoc">Havoc C2</option>
+          <option value="brute_ratel">Brute Ratel</option>
+        </select>
+        <button class="rekon-btn" onclick="detectC2()">HUNT</button>
+      </div>
+      <div id="c2-result" class="result-area" style="display:none;"></div>
+    </div>
+
+    <div id="exposed" class="tool-section">
+      <div class="tool-box">
+        <select id="svc-select" class="rekon-input rekon-select">
+          <option value="rdp">RDP (3389)</option>
+          <option value="smb">SMB (445)</option>
+          <option value="telnet">Telnet (23)</option>
+          <option value="jenkins">Jenkins</option>
+          <option value="kibana">Kibana</option>
+          <option value="grafana">Grafana</option>
+          <option value="mongo">MongoDB (27017)</option>
+          <option value="elastic">Elasticsearch (9200)</option>
+        </select>
+        <button class="rekon-btn" onclick="findExposed()">FIND</button>
+      </div>
+      <div id="svc-result" class="result-area" style="display:none;"></div>
+    </div>
+
+    <div class="links">
+      <a href="https://h3ad-sec.github.io/" target="_blank" rel="noopener">Back to H3AD-SEC</a>
+    </div>
+
+    <div class="footer">H3AD-REKON © 2026 &nbsp;|&nbsp; Intelligence. Detection. Response.</div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
