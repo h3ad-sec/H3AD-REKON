@@ -4,17 +4,11 @@
     {
       "src": "/api/(.*)",
       "headers": {
-        "Access-Control-Allow-Origin": "https://h3ad-sec.github.io",
+        "Access-Control-Allow-Origin": "https://h3ad-rekon.vercel.app",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type"
       },
       "dest": "/api/$1"
     }
-  ],
-  "env": {
-    "SHODAN_KEY": "@shodan_key",
-    "VT_KEY": "@vt_key",
-    "ABUSEIPDB_KEY": "@abuseipdb_key",
-    "ALLOWED_ORIGIN": "https://h3ad-sec.github.io"
-  }
+  ]
 }
