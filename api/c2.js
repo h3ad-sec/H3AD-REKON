@@ -1,17 +1,19 @@
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || 'https://h3ad-sec.github.io';
-
 const C2_QUERIES = {
   cobaltstrike: 'product:"Cobalt Strike Beacon"',
-  metasploit:   'product:"Metasploit" http.title:"Metasploit"',
-  sliver:       'ssl.cert.subject.cn:sliver http.title:"Sliver"',
-  havoc:        'http.html:"Havoc C2" port:443',
+  metasploit:   'http.title:"Metasploit"',
+  sliver:       'http.title:"Sliver"',
+  havoc:        'http.html:"Havoc C2"',
   brute_ratel:  'product:"Brute Ratel C4"',
 };
 
 export default async function handler(req, res) {
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  res.setHeader('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
+  const origin = req.headers.origin || '';
+  const allowed = process.env.ALLOWED_ORIGIN || '';
+  res.setHeader('Access-Control-Allow-Origin', allowed.includes(origin) ? origin : allowed.split(',')[0].trim());
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type', 'application/json');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { framework } = req.query;
   const query = C2_QUERIES[framework];
@@ -19,16 +21,16 @@ export default async function handler(req, res) {
 
   try {
     const KEY = process.env.SHODAN_KEY;
-    const url = `https://api.shodan.io/shodan/host/search?key=${KEY}&query=${encodeURIComponent(query)}&minify=false`;
-    const r = await fetch(url);
+    const r = await fetch(`https://api.shodan.io/shodan/host/search?key=${KEY}&query=${encodeURIComponent(query)}&minify=false`);
+    if (!r.ok) return res.status(500).json({ error: `Shodan error: ${r.status}` });
     const data = await r.json();
 
     const hosts = (data.matches || []).map(h => ({
-      ip_str: h.ip_str,
-      port: h.port,
-      org: h.org,
+      ip_str:       h.ip_str,
+      port:         h.port,
+      org:          h.org,
       country_name: h.location?.country_name,
-      data: h.data,
+      data:         typeof h.data === 'string' ? h.data.substring(0, 120) : '',
     }));
 
     return res.status(200).json({ query, total: data.total, hosts });
